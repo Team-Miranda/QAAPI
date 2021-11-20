@@ -47,12 +47,62 @@ module.exports.addQuestion = (body, name, email, productId, time) => {
 }
 
 // ADD A NEW ANSWER FOR A QUESTION
-module.exports.addAnswer = (questionId, body, time, name, email, photos) => {
-  // console.log('addAnswer to db: ', questionId, body, name, email, photos, time)
+module.exports.addAnswer = (questionId, body, time, name, email, photoURLs) => {
+  photoURLs = '[' + photoURLs.map((each) => {return `'${each}'`}) + ']';
+
   return pool.query(`
+    WITH answer_insert AS (
     INSERT INTO answers (id, question_id, body, date_written, answerer_name, answerer_email, reported, helpful)
-    VALUES (default, ${questionId}, '${body}', ${time}, '${name}', '${email}', false, 0);
+    VALUES (default, ${questionId}, '${body}', ${time}, '${name}', '${email}', false, 0)
+    RETURNING id)
+
+    INSERT INTO photos (id, answer_id, url)
+    VALUES (default, (SELECT id FROM answer_insert), unnest(array${photoURLs}));
   `)
-  .then(res => res.rows)
-  .catch(err => err)
+    .then(res => res)
+    .catch(err => err)
+}
+
+// INCREMENT A QUESTION'S HELPFUL COUNT
+module.exports.updateQuestionHelpful = (questionId) => {
+  return pool.query(`
+    UPDATE questions
+    SET helpful = (helpful + 1)
+    WHERE id = ${questionId}
+  `)
+    .then(res => res)
+    .catch(err => err)
+}
+
+// REPORT A QUESTION
+module.exports.reportQuestion = (questionId) => {
+  return pool.query(`
+    UPDATE questions
+    SET reported = true
+    WHERE id = ${questionId}
+  `)
+    .then(res => res)
+    .catch(err => err)
+}
+
+// INCREMENT AN ANSWERS'S HELPFUL COUNT
+module.exports.updateAnswerHelpful = (answerId) => {
+  return pool.query(`
+    UPDATE answers
+    SET helpful = (helpful + 1)
+    WHERE id = ${answerId}
+  `)
+    .then(res => res)
+    .catch(err => err)
+}
+
+// REPORT AN ANSWER
+module.exports.reportAnswer = (answerId) => {
+  return pool.query(`
+    UPDATE answers
+    SET reported = true
+    WHERE id = ${answerId}
+  `)
+    .then(res => res)
+    .catch(err => err)
 }
