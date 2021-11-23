@@ -1,0 +1,36 @@
+config:
+  target: "http://localhost:3000"
+  phases:
+    - duration: 60
+      arrivalRate: 5
+      name: Warm up
+    - duration: 120
+      arrivalRate: 5
+      rampTo: 50
+      name: Ramp up load
+    - duration: 120
+      arrivalRate: 50
+      name: Sustained load
+  # payload:
+  #   path: "keywords.csv"
+  #   fields:
+  #     - "keyword"
+
+scenarios:
+  - name: "get questions"
+    flow:
+      # - post:
+      #     url: "/search"
+      #     json:
+      #       kw: "{{ keyword }}"
+      #     capture:
+      #       - json: "$.results[0].id"
+      #         as: "productId"
+      - get:
+          url: "/qa/questions?product_id={{$randomNumber(1,10000)}}"
+          # url: "/product/{{ $randomNumber(1, 1000) }}/details"
+      # - think: 5
+      # - post:
+      #     url: "/cart"
+      #     json:
+      #       productId: "{{ productId }}"
