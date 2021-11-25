@@ -1,7 +1,7 @@
-const { Pool, Client } = require("pg");
+const { Pool, Client } = require('pg');
 
 const pool = new Pool({
-  database: "qa",
+  database: 'qa',
 });
 
 // GET ALL QUESTIONS FOR GIVEN PRODUCT
@@ -54,21 +54,23 @@ module.exports.addQuestion = (body, name, email, productId, time) => {
   `
     )
     .then((res) => res.rows)
-    .catch((err) => {throw err});
+    .catch((err) => {
+      throw err;
+    });
 };
 
 // ADD A NEW ANSWER FOR A QUESTION
 module.exports.addAnswer = (questionId, body, time, name, email, photoURLs) => {
-  photoURLs =
-    "[" +
-    photoURLs.map((each) => {
-      return `'${each}'`;
-    }) +
-    "]";
-
-  return pool
-    .query(
-      `
+  if (photoURLs.length > 0) {
+    photoURLs =
+      '[' +
+      photoURLs.map((each) => {
+        return `'${each}'`;
+      }) +
+      ']';
+    return pool
+      .query(
+        `
     WITH answer_insert AS (
     INSERT INTO answers (id, question_id, body, date_written, answerer_name, answerer_email, reported, helpful)
     VALUES (default, ${questionId}, '${body}', ${time}, '${name}', '${email}', false, 0)
@@ -77,9 +79,25 @@ module.exports.addAnswer = (questionId, body, time, name, email, photoURLs) => {
     INSERT INTO photos (id, answer_id, url)
     VALUES (default, (SELECT id FROM answer_insert), unnest(array${photoURLs}));
   `
-    )
-    .then((res) => res)
-    .catch((err) => {throw err});
+      )
+      .then((res) => res)
+      .catch((err) => {
+        throw err;
+      });
+  } else {
+    return pool
+      .query(
+        `
+    INSERT INTO answers (id, question_id, body, date_written, answerer_name, answerer_email, reported, helpful)
+    VALUES (default, ${questionId}, '${body}', ${time}, '${name}', '${email}', false, 0)
+
+      `
+      )
+      .then((res) => res)
+      .catch((err) => {
+        throw err;
+      });
+  }
 };
 
 // INCREMENT A QUESTION'S HELPFUL COUNT
@@ -93,7 +111,9 @@ module.exports.updateQuestionHelpful = (questionId) => {
   `
     )
     .then((res) => res)
-    .catch((err) => {throw err});
+    .catch((err) => {
+      throw err;
+    });
 };
 
 // REPORT A QUESTION
@@ -107,7 +127,9 @@ module.exports.reportQuestion = (questionId) => {
   `
     )
     .then((res) => res)
-    .catch((err) => {throw err});
+    .catch((err) => {
+      throw err;
+    });
 };
 
 // INCREMENT AN ANSWERS'S HELPFUL COUNT
@@ -121,7 +143,9 @@ module.exports.updateAnswerHelpful = (answerId) => {
   `
     )
     .then((res) => res)
-    .catch((err) => {throw err});
+    .catch((err) => {
+      throw err;
+    });
 };
 
 // REPORT AN ANSWER
@@ -135,7 +159,9 @@ module.exports.reportAnswer = (answerId) => {
   `
     )
     .then((res) => res)
-    .catch((err) => {throw err});
+    .catch((err) => {
+      throw err;
+    });
 };
 
 // SELECT to_timestamp(question_date/1000):: timestamp, question_id from questions limit 10;

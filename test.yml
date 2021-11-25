@@ -2,35 +2,43 @@ config:
   target: "http://localhost:3000"
   phases:
     - duration: 60
-      arrivalRate: 5
+      arrivalRate: 2
       name: Warm up
-    - duration: 120
+    - duration: 60
       arrivalRate: 5
-      rampTo: 50
+      rampTo: 25
       name: Ramp up load
-    - duration: 120
-      arrivalRate: 50
-      name: Sustained load
-  # payload:
-  #   path: "keywords.csv"
-  #   fields:
-  #     - "keyword"
+    # - duration: 60
+    #   arrivalRate: 25
+    #   name: Sustained load
 
 scenarios:
   - name: "get questions"
     flow:
-      # - post:
-      #     url: "/search"
-      #     json:
-      #       kw: "{{ keyword }}"
-      #     capture:
-      #       - json: "$.results[0].id"
-      #         as: "productId"
+
       - get:
-          url: "/qa/questions?product_id={{$randomNumber(1,10000)}}"
-          # url: "/product/{{ $randomNumber(1, 1000) }}/details"
-      # - think: 5
-      # - post:
-      #     url: "/cart"
-      #     json:
-      #       productId: "{{ productId }}"
+          url: "/qa/questions?product_id={{$randomNumber(1,1000000)}}"
+      - post:
+          url: "/qa/questions"
+          json:
+            product_id: "{{$randomNumber(1,1000000)}}"
+            body: "artillery test question????"
+            name: "randomUser{{$randomNumber(1,1000)}}"
+            email: "randomUser{{$randomNumber(1,1000)}}@yahoo.com"
+      - get:
+          url: "/qa/questions/{{$randomNumber(1,3500000)}}/answers"
+      - post:
+          url: "/qa/questions/{{$randomNumber(1,3500000)}}/answers"
+          json:
+            body: "artillery test answer!!"
+            name: "randomUser{{$randomNumber(1,1000)}}"
+            email: "randomUser{{$randomNumber(1,1000)}}@yahoo.com"
+            photos: ["https://source.unsplash.com/random"]
+      - put:
+          url: "/qa/questions/{{$randomNumber(1,3500000)}}/helpful"
+      - put:
+          url: "/qa/questions/{{$randomNumber(1,3500000)}}/report"
+      - put:
+          url: "/qa/answers/{{$randomNumber(1,6000000)}}/helpful"
+      - put:
+          url: "/qa/answers/{{$randomNumber(1,6000000)}}/report"
