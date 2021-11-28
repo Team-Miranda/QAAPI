@@ -1,16 +1,17 @@
 config:
   target: "http://localhost:3000"
   phases:
-    - duration: 60
-      arrivalRate: 2
-      name: Warm up
+    # - duration: 60
+    #   arrivalRate: 2
+    #   rampTo: 25
+    #   name: Warm up
     - duration: 60
       arrivalRate: 5
-      rampTo: 25
+      rampTo: 50
       name: Ramp up load
-    # - duration: 60
-    #   arrivalRate: 25
-    #   name: Sustained load
+    - duration: 60
+      arrivalRate: 50
+      name: Sustained load
 
 scenarios:
   - name: "get questions"
