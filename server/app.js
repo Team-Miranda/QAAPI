@@ -8,8 +8,7 @@ const db = require('./db/index.js');
 
 app.use(express.json());
 app.use(morgan('dev'))
-// app.use(express.responseTime());
-// app.use(express.static())
+app.use(express.static('public'))
 
 // GET ALL QUESTIONS FOR GIVEN PRODUCT
 app.get('/qa/questions', (req, res) => {
@@ -105,6 +104,13 @@ app.put('/qa/answers/:answer_id/report', (req, res) => {
     .then((success) => res.status(204).send('reported'))
     .catch((err) => res.status(500).send(err));
 });
+
+app.get('/loaderio-52c2a70b810c4b5b3923ceef2d530266/', (req, res) => {
+
+    res.status(200).send('loaderio-52c2a70b810c4b5b3923ceef2d530266');
+
+});
+
 
 app.listen(3000, () => {
   console.log('listening on port 3000');
