@@ -163,5 +163,3 @@ module.exports.reportAnswer = (answerId) => {
       throw err;
     });
 };
-
-// SELECT to_timestamp(question_date/1000):: timestamp, question_id from questions limit 10;
