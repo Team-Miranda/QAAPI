@@ -1,7 +1,8 @@
 const { Pool, Client } = require('pg');
+const {URI} = require('../../SQLConnection.js')
 
 const pool = new Pool({
-  connectionString: "postgresql://ubuntu:ubuntu@18.117.167.161:5432/qa",
+  connectionString: URI,
 });
 
 // GET ALL QUESTIONS FOR GIVEN PRODUCT

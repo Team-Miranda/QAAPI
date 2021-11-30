@@ -1,0 +1,1 @@
+module.exports.URI = "postgresql://ubuntu:ubuntu@18.117.61.104:5432/qa";

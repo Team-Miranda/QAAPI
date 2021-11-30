@@ -1,3 +1,4 @@
 templateData/
 node_modules/
 test.yml/
+SQLConnection.js/
