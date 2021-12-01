@@ -1,5 +1,5 @@
 const { Pool, Client } = require('pg');
-const {URI} = require('../../SQLConnection.js')
+const { URI } = require('../../SQLConnection.js');
 
 const pool = new Pool({
   connectionString: URI,
@@ -10,12 +10,20 @@ module.exports.getQuestions = (productId, page = 1, count = 5) => {
   return pool
     .query(
       `
-    SELECT id, product_id, body, to_timestamp(date_written/1000), asker_name, asker_email, reported, helpful AS helpfulness
-    FROM questions
-    WHERE product_id = ${productId} AND reported = false
-    ORDER BY id
-    OFFSET ${page * count - count}
-    FETCH NEXT ${count} ROWS ONLY;
+      SELECT questions.id AS questions_id, questions.body, questions.date_written, questions.asker_name, questions.reported, questions.helpful,
+      COALESCE(JSON_OBJECT_AGG(answers.id,
+        JSON_BUILD_OBJECT('id', answers.id, 'body', answers.body, 'date', answers.date_written, 'answerer_name', answers.answerer_name, 'helpfulness', answers.helpful, 'photos', ARRAY (
+          SELECT photos.url as URL
+          FROM photos
+          WHERE photos.answer_id = answers.id
+          ))) FILTER (WHERE answers.id IS NOT NULL), '{}'::JSON) AS answers
+        FROM questions
+        LEFT JOIN answers
+        ON questions.id = answers.question_id
+      WHERE product_id = ${productId} AND questions.reported = false
+      GROUP BY questions.id
+      OFFSET ${page * count - count}
+      FETCH NEXT ${count} ROWS ONLY;
   `
     )
     .then((res) => res.rows)

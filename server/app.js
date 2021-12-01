@@ -4,15 +4,19 @@ const express = require('express');
 const app = express();
 const morgan = require('morgan');
 const path = require('path');
+const compression = require('compression')
 const db = require('./db/index.js');
 
 app.use(express.json());
 app.use(morgan('dev'))
+app.use(compression())
 app.use(express.static('public'))
+
 
 // GET ALL QUESTIONS FOR GIVEN PRODUCT
 app.get('/qa/questions', (req, res) => {
   let query = req.query;
+  console.log('GET QUESTIONS FOR PRODUCT ', query.product_id)
 
   db.getQuestions(query.product_id, query.page, query.count)
     .then((questions) => {
@@ -31,7 +35,7 @@ app.get('/qa/questions', (req, res) => {
 app.get('/qa/questions/:question_id/answers', (req, res) => {
   let params = req.params;
   let query = req.query;
-  query.page;
+  console.log('GET ANSWERS FOR QUESTION ', params.question_id)
 
   db.getAnswers(params.question_id, query.page, query.count)
     .then((answers) => {
@@ -51,6 +55,7 @@ app.get('/qa/questions/:question_id/answers', (req, res) => {
 app.post('/qa/questions', (req, res) => {
   let body = req.body;
   let newEntryTime = Math.round(new Date().getTime()).toString();
+  console.log('POST QUESTION: ', body.body)
 
   db.addQuestion(body.body, body.name, body.email, body.product_id, newEntryTime)
     .then((answers) => {
@@ -66,6 +71,7 @@ app.post('/qa/questions/:question_id/answers', (req, res) => {
   let body = req.body;
   let params = req.params;
   let newEntryTime = Math.round(new Date().getTime()).toString();
+  console.log('POST ANSWER: ', body.body)
 
   db.addAnswer(params.question_id, body.body, newEntryTime, body.name, body.email, body.photos)
     .then((response) => {
