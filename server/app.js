@@ -12,6 +12,16 @@ app.use(morgan('dev'))
 app.use(compression())
 app.use(express.static('public'))
 
+app.get('/test', (req, res) => {
+  db.test()
+    .then((response) => {
+      res.status(200).send(response)
+    })
+    .catch((err) => {
+      res.status(500).send(err.stack);
+    })
+
+})
 
 // GET ALL QUESTIONS FOR GIVEN PRODUCT
 app.get('/qa/questions', (req, res) => {

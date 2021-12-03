@@ -5,21 +5,33 @@ const pool = new Pool({
   connectionString: URI,
 });
 
+module.exports.test = () => {
+  return pool
+  .query(
+    `
+    SELECT * FROM questions WHERE id = 1;
+`
+  )
+  .then((res) => res.rows)
+  .catch((err) => {
+    throw err;
+  });
+}
+
 // GET ALL QUESTIONS FOR GIVEN PRODUCT
 module.exports.getQuestions = (productId, page = 1, count = 5) => {
   return pool
     .query(
       `
-      SELECT questions.id AS questions_id, questions.body, questions.date_written, questions.asker_name, questions.reported, questions.helpful,
-      COALESCE(JSON_OBJECT_AGG(answers.id,
-        JSON_BUILD_OBJECT('id', answers.id, 'body', answers.body, 'date', answers.date_written, 'answerer_name', answers.answerer_name, 'helpfulness', answers.helpful, 'photos', ARRAY (
+      SELECT questions.id AS questions_id, questions.body, to_timestamp(questions.date_written/1000) AS date, questions.asker_name, questions.reported, questions.helpful,
+      COALESCE (JSON_OBJECT_AGG(answers.id,
+        JSON_BUILD_OBJECT('id', answers.id, 'body', answers.body, 'date', to_timestamp(answers.date_written/1000), 'answerer_name', answers.answerer_name, 'helpfulness', answers.helpful, 'photos', ARRAY (
           SELECT photos.url as URL
           FROM photos
           WHERE photos.answer_id = answers.id
           ))) FILTER (WHERE answers.id IS NOT NULL), '{}'::JSON) AS answers
         FROM questions
-        LEFT JOIN answers
-        ON questions.id = answers.question_id
+        LEFT JOIN answers ON questions.id = answers.question_id
       WHERE product_id = ${productId} AND questions.reported = false
       GROUP BY questions.id
       OFFSET ${page * count - count}

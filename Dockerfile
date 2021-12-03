@@ -14,6 +14,7 @@ WORKDIR /app
 RUN npm install
 
 # What port will the container talk to the outside world with once created?
+# You can also do port mapping here ie: EXPOSE 3000:80
 EXPOSE 3000
 
 # How do you start your app?

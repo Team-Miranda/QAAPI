@@ -36,3 +36,14 @@ ON answers(question_id);
 CREATE INDEX idx_photos_answer
 ON photos(answer_id);
 
+-- do do, index helpful column?
+
+CREATE INDEX idx_questions_helpful ON questions(helpful);
+CREATE INDEX idx_answers_helpful ON answers(helpful);
+
+-- CREATE INDEX idx_questions_id ON questions (id);
+-- CREATE INDEX idx_answers_id ON answers (id);
+-- CREATE INDEX idx_photos_id ON photos (id);
+
+-- CREATE INDEX idx_questions_reported ON questions (reported);
+-- CREATE INDEX idx_answers_reported ON answers (reported);

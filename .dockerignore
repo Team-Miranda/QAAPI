@@ -1,2 +1,4 @@
 templateData/
 node_modules/
+SQLConnection.js/
+NginX-config-file.txt
