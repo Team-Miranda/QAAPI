@@ -7,10 +7,10 @@ config:
     #   name: Warm up
     - duration: 60
       arrivalRate: 5
-      rampTo: 50
+      rampTo: 20
       name: Ramp up load
     - duration: 60
-      arrivalRate: 50
+      arrivalRate: 20
       name: Sustained load
 
 scenarios:

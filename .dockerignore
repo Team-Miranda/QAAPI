@@ -1,5 +1,4 @@
 templateData/
 node_modules/
-test.yml/
 SQLConnection.js/
 NginX-config-file.txt
